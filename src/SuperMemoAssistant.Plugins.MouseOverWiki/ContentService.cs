@@ -2,6 +2,7 @@
 using MouseoverPopup.Interop;
 using PluginManager.Interop.Sys;
 using SuperMemoAssistant.Extensions;
+using SuperMemoAssistant.Interop.SuperMemo.Elements.Builders;
 using SuperMemoAssistant.Plugins.MouseOverWiki.Models;
 using SuperMemoAssistant.Sys.Remoting;
 using System;
@@ -34,7 +35,7 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
       _httpClient?.Dispose();
     }
 
-    public RemoteTask<string> FetchHtml(RemoteCancellationToken ct, string url)
+    public RemoteTask<PopupContent> FetchHtml(RemoteCancellationToken ct, string url)
     {
       try
       {
@@ -54,7 +55,7 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
       }
     }
 
-    private async Task<string> GetWikipediaExtractAsync(RemoteCancellationToken ct, string title, string language)
+    private async Task<PopupContent> GetWikipediaExtractAsync(RemoteCancellationToken ct, string title, string language)
     {
       string url = string.Format(ArticleExtractUrl, language, title);
       string response = await GetAsync(ct.Token(), url);
@@ -63,7 +64,7 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
     }
 
     // TODO: Include picture
-    private string CreatePopupHtml(WikiExtract extract)
+    private PopupContent CreatePopupHtml(WikiExtract extract)
     {
 
       if (extract == null)
@@ -82,7 +83,16 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
       string desc = extract.description;
       string body = extract.extract_html;
 
-      return string.Format(html, title, desc, body);
+      string content = string.Format(html, title, desc, body);
+      var refs = new References();
+      refs.Author = string.Empty;
+      //TODO: Date
+      refs.Link = $"https://{extract.lang}.wikipedia.ord/wiki/" + extract.title.Replace(' ', '_');
+      refs.Source = "Wikipedia";
+      refs.Title = extract.displaytitle;
+
+      var refs = new PopupContent()
+
     }
 
     private async Task<string> GetAsync(CancellationToken ct, string url)
