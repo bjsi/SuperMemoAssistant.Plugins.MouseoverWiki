@@ -87,11 +87,11 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
       var refs = new References();
       refs.Author = string.Empty;
       //TODO: Date
-      refs.Link = $"https://{extract.lang}.wikipedia.ord/wiki/" + extract.title.Replace(' ', '_');
+      refs.Link = extract.content_urls.desktop.page;
       refs.Source = "Wikipedia";
       refs.Title = extract.displaytitle;
 
-      var refs = new PopupContent()
+      return new PopupContent(refs, content);
 
     }
 
