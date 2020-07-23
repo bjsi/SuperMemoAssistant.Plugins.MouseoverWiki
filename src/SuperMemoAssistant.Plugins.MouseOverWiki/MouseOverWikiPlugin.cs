@@ -56,7 +56,6 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
 
     /// <inheritdoc />
     public override bool HasSettings => false;
-    private const string ProviderName = "Wikipedia";
     private const string WikipediaRegex = @"^https?\:\/\/([\w\.]+)wikipedia.org\/wiki\/([\w]+)+";
     private ContentService _contentProvider => new ContentService();
 
@@ -68,12 +67,12 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
     protected override void PluginInit()
     {
 
-      if (!this.RegisterProvider(ProviderName, new List<string> { WikipediaRegex }, _contentProvider))
+      if (!this.RegisterProvider(Name, new string[] { WikipediaRegex },  _contentProvider))
       {
-        LogTo.Error($"Failed to Register provider {ProviderName} with MouseoverPopup Service");
+        LogTo.Error($"Failed to Register provider {Name} with MouseoverPopup Service");
         return;
       }
-      LogTo.Debug($"Successfully registered provider {ProviderName} with MouseoverPopup Service");
+      LogTo.Debug($"Successfully registered provider {Name} with MouseoverPopup Service");
     }
 
     #endregion

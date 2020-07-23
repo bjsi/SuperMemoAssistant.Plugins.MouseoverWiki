@@ -10,7 +10,7 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
 {
   public static class PluginBaseEx
   {
-    public static bool RegisterProvider<T>(this SMAPluginBase<T> plugin, string name, List<string> urlRegexes, IContentProvider provider) where T : SMAPluginBase<T>
+    public static bool RegisterProvider<T>(this SMAPluginBase<T> plugin, string name, string[] urlRegexes, IMouseoverContentProvider provider) where T : SMAPluginBase<T>
     {
       var svc = plugin.GetService<IMouseoverSvc>();
 

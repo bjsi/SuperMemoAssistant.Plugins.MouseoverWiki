@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 namespace SuperMemoAssistant.Plugins.MouseOverWiki
 {
   [Serializable]
-  public class ContentService : PerpetualMarshalByRefObject, IContentProvider
+  public class ContentService : PerpetualMarshalByRefObject, IMouseoverContentProvider
   {
 
     private string ArticleExtractUrl = @"https://{0}.wikipedia.org/api/rest_v1/page/summary/{1}";
@@ -48,11 +48,15 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
           ? null
           : GetWikipediaExtractAsync(ct, title, language);
 
-      } catch (Exception ex)
+      } 
+      catch (TaskCanceledException) { }
+      catch (Exception ex)
       {
         LogTo.Error($"Failed to FetchHtml for url {url} with exception {ex}");
         throw;
       }
+
+      return null;
     }
 
     private async Task<PopupContent> GetWikipediaExtractAsync(RemoteCancellationToken ct, string title, string language)
@@ -63,7 +67,6 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
       return CreatePopupHtml(extract);
     }
 
-    // TODO: Include picture
     private PopupContent CreatePopupHtml(WikiExtract extract)
     {
 
@@ -75,23 +78,33 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
             <body>
               <h1>{0}</h1>
               <h4>{1}</h4>
-              <p>{2}</p>
+              <div>
+                {2}
+                <p>{3}</p>
+              </div>
             </body>
           </html>";
+
+      string img = extract.thumbnail.IsNull() || extract.thumbnail.source.IsNullOrEmpty()
+        ? string.Empty
+        : $@"<p style=""float: left;"">
+              <img src=""{extract.thumbnail.source}"" border=""3px"" >
+             </p>";
 
       string title = extract.displaytitle;
       string desc = extract.description;
       string body = extract.extract_html;
 
-      string content = string.Format(html, title, desc, body);
+      string content = string.Format(html, title, desc, img, body);
+
+      // Add references
       var refs = new References();
       refs.Author = string.Empty;
-      //TODO: Date
       refs.Link = extract.content_urls.desktop.page;
       refs.Source = "Wikipedia";
       refs.Title = extract.displaytitle;
 
-      return new PopupContent(refs, content);
+      return new PopupContent(refs, content, true, browserQuery: refs.Link);
 
     }
 
