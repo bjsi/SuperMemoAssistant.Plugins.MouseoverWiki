@@ -1,10 +1,6 @@
-﻿using MouseoverPopup.Interop;
+﻿using Anotar.Serilog;
+using MouseoverPopupInterfaces;
 using SuperMemoAssistant.Interop.Plugins;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SuperMemoAssistant.Plugins.MouseOverWiki
 {
@@ -15,7 +11,10 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
       var svc = plugin.GetService<IMouseoverSvc>();
 
       if (svc == null)
+      {
+        LogTo.Debug("Failed to get mouseover service - it was null");
         return false;
+      }
 
       return svc.RegisterProvider(name, urlRegexes, provider);
     }

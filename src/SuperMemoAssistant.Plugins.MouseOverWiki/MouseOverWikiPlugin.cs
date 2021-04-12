@@ -1,4 +1,12 @@
-﻿#region License & Metadata
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
+using Anotar.Serilog;
+using SuperMemoAssistant.Interop.Plugins;
+using SuperMemoAssistant.Services;
+using SuperMemoAssistant.Services.IO.HotKeys;
+using SuperMemoAssistant.Services.UI.Configuration;
+
+#region License & Metadata
 
 // The MIT License (MIT)
 // 
@@ -29,23 +37,15 @@
 
 namespace SuperMemoAssistant.Plugins.MouseOverWiki
 {
-  using System.Collections.Generic;
-  using System.Diagnostics.CodeAnalysis;
-  using Anotar.Serilog;
-  using MouseoverPopup.Interop;
-  using PluginManager.Interop.Sys;
-  using SuperMemoAssistant.Services.Sentry;
-  using SuperMemoAssistant.Sys.Remoting;
-
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
   [SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
-  public class MouseOverWikiPlugin : SentrySMAPluginBase<MouseOverWikiPlugin>
+  public class MouseOverWikiPlugin : SMAPluginBase<MouseOverWikiPlugin>
   {
     #region Constructors
 
     /// <inheritdoc />
-    public MouseOverWikiPlugin() : base("Enter your Sentry.io api key (strongly recommended)") { }
+    public MouseOverWikiPlugin() { }
 
     #endregion
 
@@ -55,24 +55,42 @@ namespace SuperMemoAssistant.Plugins.MouseOverWiki
     public override string Name => "MouseOverWiki";
 
     /// <inheritdoc />
-    public override bool HasSettings => false;
+    public override bool HasSettings => true;
     private const string WikipediaRegex = @"^https?\:\/\/([\w\.]+)wikipedia.org\/wiki\/([\w]+)+";
     private ContentService _contentProvider => new ContentService();
+
+    private MouseoverWikiCfg Config { get; set; }
 
     #endregion
 
     #region Methods Impl
 
+    private async Task LoadConfig()
+    {
+      Config = await Svc.Configuration.Load<MouseoverWikiCfg>() ?? new MouseoverWikiCfg();
+    }
+
+
     /// <inheritdoc />
     protected override void PluginInit()
     {
+
+      LoadConfig().Wait();
 
       if (!this.RegisterProvider(Name, new string[] { WikipediaRegex },  _contentProvider))
       {
         LogTo.Error($"Failed to Register provider {Name} with MouseoverPopup Service");
         return;
       }
+
       LogTo.Debug($"Successfully registered provider {Name} with MouseoverPopup Service");
+    }
+
+    // Set HasSettings to true, and uncomment this method to add your custom logic for settings
+    /// <inheritdoc />
+    public override void ShowSettings()
+    {
+      ConfigurationWindow.ShowAndActivate(HotKeyManager.Instance, Config);
     }
 
     #endregion
