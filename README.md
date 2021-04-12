@@ -8,6 +8,12 @@
 
 > Note: This plugin depends on the [Mouseover Popup plugin](https://github.com/bjsi/SuperMemoAssistant.Plugins.MouseoverPopup). Make sure you install it alongside Mouseover Wiki.
 
+1. Go to the [latest release page](https://github.com/bjsi/SuperMemoAssistant.Plugins.TextFormatting/releases/latest) on this GitHub repository.
+2. Download the latest available version.
+3. Navigate to the development plugin folder (`C:\Users\<YOUR USER NAME>\Documents\SuperMemoAssistant\Plugins\Development`) and extract the zip folder into the directory.
+
+Note: If you are upgrading from an older version, you should delete the older version first.
+
 ## Usage
 
 Simply hover over wikipedia article links in SuperMemo to open the preview window. The popup window has buttons at the bottom of the window to extract the preview into your collection or open the full article in your browser.
