@@ -1,4 +1,4 @@
-# Mouseover Wiki Plugin for SuperMemoAssistant
+# Mouseover Wiki Plugin
 
 ## Features
 
@@ -8,7 +8,7 @@
 
 > Note: This plugin depends on the [Mouseover Popup plugin](https://github.com/bjsi/SuperMemoAssistant.Plugins.MouseoverPopup). Make sure you install it alongside Mouseover Wiki.
 
-1. Go to the [latest release page](https://github.com/bjsi/SuperMemoAssistant.Plugins.TextFormatting/releases/latest) on this GitHub repository.
+1. Go to the [latest release page](https://github.com/bjsi/SuperMemoAssistant.Plugins.MouseoverWiki/releases/latest) on this GitHub repository.
 2. Download the latest available version.
 3. Navigate to the development plugin folder (`C:\Users\<YOUR USER NAME>\Documents\SuperMemoAssistant\Plugins\Development`) and extract the zip folder into the directory.
 
