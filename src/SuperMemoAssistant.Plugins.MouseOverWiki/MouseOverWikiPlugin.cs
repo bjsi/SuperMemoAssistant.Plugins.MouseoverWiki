@@ -1,10 +1,10 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Anotar.Serilog;
-using SuperMemoAssistant.Interop.Plugins;
+﻿using Anotar.Serilog;
+using SuperMemoAssistant.Plugins.MouseOverWiki;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Services.IO.HotKeys;
+using SuperMemoAssistant.Services.Sentry;
 using SuperMemoAssistant.Services.UI.Configuration;
+using System.Diagnostics.CodeAnalysis;
 
 #region License & Metadata
 
@@ -29,73 +29,69 @@ using SuperMemoAssistant.Services.UI.Configuration;
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   6/26/2020 1:41:17 AM
+// Created On:   4/29/2021 6:07:25 PM
 // Modified By:  james
 
 #endregion
 
 
-namespace SuperMemoAssistant.Plugins.MouseOverWiki
+
+
+namespace SuperMemoAssistant.Plugins.MouseoverWiki
 {
   // ReSharper disable once UnusedMember.Global
   // ReSharper disable once ClassNeverInstantiated.Global
   [SuppressMessage("Microsoft.Naming", "CA1724:TypeNamesShouldNotMatchNamespaces")]
-  public class MouseOverWikiPlugin : SMAPluginBase<MouseOverWikiPlugin>
+  public class MouseoverWikiPlugin : SentrySMAPluginBase<MouseoverWikiPlugin>
   {
     #region Constructors
 
     /// <inheritdoc />
-    public MouseOverWikiPlugin() { }
+    public MouseoverWikiPlugin() : base("Enter your Sentry.io api key (strongly recommended)") { }
 
     #endregion
+
+
+
 
     #region Properties Impl - Public
 
     /// <inheritdoc />
-    public override string Name => "MouseOverWiki";
+    public override string Name => "MouseoverWiki";
 
     /// <inheritdoc />
     public override bool HasSettings => true;
+
     private const string WikipediaRegex = @"^https?\:\/\/([\w\.]+)wikipedia.org\/wiki\/([\w]+)+";
     private ContentService _contentProvider => new ContentService();
-
     private MouseoverWikiCfg Config { get; set; }
+
 
     #endregion
 
-    #region Methods Impl
-
-    private async Task LoadConfig()
+    private void LoadConfig()
     {
-      Config = await Svc.Configuration.Load<MouseoverWikiCfg>() ?? new MouseoverWikiCfg();
+      Config = Svc.Configuration.Load<MouseoverWikiCfg>() ?? new MouseoverWikiCfg();
     }
 
 
     /// <inheritdoc />
-    protected override void PluginInit()
+    protected override void OnSMStarted(bool wasSMAlreadyStarted)
     {
-
-      LoadConfig().Wait();
-
-      if (!this.RegisterProvider(Name, new string[] { WikipediaRegex },  _contentProvider))
+      LoadConfig();
+      if (!this.RegisterProvider(Name, new string[] { WikipediaRegex }, _contentProvider))
       {
         LogTo.Error($"Failed to Register provider {Name} with MouseoverPopup Service");
         return;
       }
 
       LogTo.Debug($"Successfully registered provider {Name} with MouseoverPopup Service");
+      base.OnSMStarted(wasSMAlreadyStarted);
     }
 
-    // Set HasSettings to true, and uncomment this method to add your custom logic for settings
-    /// <inheritdoc />
     public override void ShowSettings()
     {
-      ConfigurationWindow.ShowAndActivate(HotKeyManager.Instance, Config);
+      ConfigurationWindow.ShowAndActivate("MouseoverWiki", HotKeyManager.Instance, Config);
     }
-
-    #endregion
-
-    #region Methods
-    #endregion
   }
 }

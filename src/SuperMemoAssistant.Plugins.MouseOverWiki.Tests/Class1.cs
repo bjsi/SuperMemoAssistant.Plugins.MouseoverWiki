@@ -1,4 +1,5 @@
-﻿#region License & Metadata
+﻿
+#region License & Metadata
 
 // The MIT License (MIT)
 // 
@@ -21,7 +22,7 @@
 // DEALINGS IN THE SOFTWARE.
 // 
 // 
-// Created On:   6/26/2020 1:41:21 AM
+// Created On:   4/29/2021 6:07:28 PM
 // Modified By:  james
 
 #endregion
@@ -29,7 +30,7 @@
 
 
 
-namespace SuperMemoAssistant.Plugins.MouseOverWiki.Tests
+namespace SuperMemoAssistant.Plugins.MouseoverWiki.Tests
 {
     class Class1
     {
