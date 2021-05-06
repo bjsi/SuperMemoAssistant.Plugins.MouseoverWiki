@@ -1,9 +1,12 @@
 ﻿using Anotar.Serilog;
+using SuperMemoAssistant.Interop.SuperMemo.Core;
 using SuperMemoAssistant.Plugins.MouseOverWiki;
 using SuperMemoAssistant.Services;
 using SuperMemoAssistant.Services.IO.HotKeys;
 using SuperMemoAssistant.Services.Sentry;
 using SuperMemoAssistant.Services.UI.Configuration;
+using SuperMemoAssistant.Sys.Remoting;
+using System;
 using System.Diagnostics.CodeAnalysis;
 
 #region License & Metadata
@@ -66,7 +69,6 @@ namespace SuperMemoAssistant.Plugins.MouseoverWiki
     private ContentService _contentProvider => new ContentService();
     private MouseoverWikiCfg Config { get; set; }
 
-
     #endregion
 
     private void LoadConfig()
@@ -79,14 +81,22 @@ namespace SuperMemoAssistant.Plugins.MouseoverWiki
     protected override void OnSMStarted(bool wasSMAlreadyStarted)
     {
       LoadConfig();
-      if (!this.RegisterProvider(Name, new string[] { WikipediaRegex }, _contentProvider))
-      {
-        LogTo.Error($"Failed to Register provider {Name} with MouseoverPopup Service");
-        return;
-      }
-
-      LogTo.Debug($"Successfully registered provider {Name} with MouseoverPopup Service");
+      Register();
+      Svc.SM.UI.ElementWdw.OnElementChanged += new ActionProxy<SMDisplayedElementChangedEventArgs>(ElementWdw_OnElementChanged);
       base.OnSMStarted(wasSMAlreadyStarted);
+    }
+
+    private void ElementWdw_OnElementChanged(SMDisplayedElementChangedEventArgs obj)
+    {
+      Register();
+    }
+
+    private void Register()
+    {
+      if (this.RegisterProvider(Name, new string[] { WikipediaRegex }, _contentProvider))
+      {
+        LogTo.Debug($"Successfully registered provider {Name} with MouseoverPopup Service");
+      }
     }
 
     public override void ShowSettings()
